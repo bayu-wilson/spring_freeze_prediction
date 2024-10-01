@@ -1,26 +1,25 @@
 # Predicting spring freeze for midwestern wheat yields
-Bayu Wilson & Cecelia Ngo
-
-### Notes
-The purpose of this project is to use publically available weather data to forecast the last frost in a particular location. By "last frost" I mean the last date in which the air temperature is below freezing after summertime. This would mainly be beneficial in the field of agriculture. For example, [this publication](https://bookstore.ksre.ksu.edu/pubs/spring-freeze-injury-to-kansas-wheat_C646.pdf) shows the effect of spring freeze injury to Kansas wheat. It would be a good idea to read this.
-
-Assumptions:
-- Winter wheat is the crop of interest
-- The region of interest is midwestern farmers, specifically Kansas farmers. But maybe it would be interesting to consider Ukraine? More relevant to current events.
-
-According to [this website](Long%20Does%20Wheat%20Take,months%20when%20it%20goes%20dormant.), growing winter wheat takes about 180–250 days. Winter wheat growth time includes up to 90 days during the colder months when it goes dormant.
-
-According to [the first publication](https://bookstore.ksre.ksu.edu/pubs/spring-freeze-injury-to-kansas-wheat_C646.pdf), the most severe crop impacts (due to spring freeze injury) will happen during the heading and flowering stage. 
-
-If a farmer knows ahead of time, they can take action. For example, they can delay fertilization, wet the plants (evaporation releases heat), or covering the crops with insulation (like straw).
-
-Let's assume that 1 month (or 1 week) is all a farmer needs to do properly mitigate these problems (monthly timescale mostly due to slow-release fertilizers).
-
-What factors would likely be good indicators for predicting a spring frost?
-- Daily Minimum Temperature
-- Temperature rate of change
-- precipitation (want soil to be somewhat damp)
-- prior information about typical frost dates
+### Bayu Wilson 
 
 
+
+#### Overview
+In this project I leverage the XGBoost machine learning library and publically available weather data to forecast the date of last spring freeze ($T\leq 28$ degrees Farenheit) of a farm in Wyandotte county in Kansas (i.e. [K.C. Farm School](https://www.kcfarmschool.org/)). **Using the XGBoost model, I decreased the mean absolute error (MAE) by 25% in comparison to standard prediction methods.** These solutions can be generalized for any cold-sensitive crops in a variety of environments but I am mainly focused on spring freeze injury to Kansas wheat. See [this publication](https://bookstore.ksre.ksu.edu/pubs/spring-freeze-injury-to-kansas-wheat_C646.pdf) for more details. I gathered this dataset using [NOAA's Climate Data Online tool](https://www.ncdc.noaa.gov/cdo-web/search).
+
+#### Main results
+In Figure 1, I show an example of minimum temperature and temperature fluctuation forecasts after Jan. 31, 2010. Generally the average and variation of the true and predicted values are similar. We can also see form the purple vertical lines that the predicted and true last day of spring freeze (LDSF) are only 3 days apart. Farmers and gardeners often use the [farmer's almanac](https://www.almanac.com/gardening/frostdates) but its average-based predictions don't capture any variations. For example, using the average, the absolute difference from the true LDSF in 2010 is 7 days, over 2 times larger than my prediction.
+
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/7f747f2a-84e0-42c8-811c-bf780449fd0c" alt="Description" width="500"/>
+</p>
+<p align="center">Figure 1. The true minimum temperature and temperature fluctuatuation distributions are in blue. The XGBoost model was trained prior to "today" and everything after "today" is forecasted (exept True distribution obviously). The data is noisy so it is not surprising that the predictions are not perfect. But since we have prior information of the seasonality (sine function) we can get pretty close. Our machine learning model can focus on temperature fluctuations rather than the total temperature. `T_flucs(t+1)` is the prediction for temperature fluctuations one day into the future. `T_flucs(t+7)` is the prediction for temperature fluctuations seven days into the future. LDSF is the last day of spring frost for the prediction and truth.</p>
+
+
+Here I show the mean absolute error (MAE) between the predicted and true LDSFs.
+
+|  MAE(Avg. LDSF over previous years, truth) | MAE(sine model minus $1\sigma$, truth) | MAE(XGBoost 1-day forcast, truth)  |
+|----------|----------|----------|
+| 10.2 days   | 8.9 days   | 7.6 days   |
+
+**Using the XGBoost model, the MAE decrease by a factor of 25%**
 
